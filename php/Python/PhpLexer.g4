@@ -99,6 +99,7 @@ def CheckHeredocEnd(self, text):
 
 SeaWhitespace:  [ \t\r\n]+ -> channel(HIDDEN);
 HtmlText:       ~[<#]+;
+XmlStart:       '<' '?' 'xml' -> pushMode(XML);
 PHPStartEcho:   PhpStartEchoFragment -> type(Echo), pushMode(PHP);
 PHPStart:       PhpStartFragment -> channel(SkipChannel), pushMode(PHP);
 HtmlScriptOpen: '<' 'script' { self._scriptTag = True } -> pushMode(INSIDE);
@@ -111,6 +112,13 @@ Shebang
     ;
 NumberSign:     '#' ~[<]* -> more;
 Error:          .         -> channel(ErrorLexem);
+
+// TODO: parse xml attributes.
+mode XML;
+
+XmlText:                  ~[?]+;
+XmlClose:                 '?' '>' -> popMode;
+XmlText2:                 '?' -> type(XmlText);
 
 mode INSIDE;
 
